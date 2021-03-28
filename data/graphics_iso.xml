@@ -3,12 +3,12 @@
         <img key="you" rect="(0, 0, 30, 30)" pt="(15, 15)" />
         <img key="it" rect="(30, 0, 30, 30)" pt="(15, 15)" />
     </file>
-    <file path="jennifer.png" transparent="top_left">
+    <file path="jennifer.png" transparent="top_left" source="https://www.spriters-resource.com/playstation_2/disgaea/sheet/8076/">
         <img key="jen_sw" rect="(38, 0, 24, 55)" pt="(10, 50)" />
         <img key="jen_nw" rect="(100, 0, 25, 55)" pt="(14, 50)" />
         <img key="jen_front" rect="(6, 0, 24, 55)" pt="(10, 50)" />
     </file>
-    <file path="warriorF.png" transparent="top_left">
+    <file path="warriorF.png" transparent="top_left" source="https://www.spriters-resource.com/playstation_2/disgaea/sheet/33847/">
         <img key="war_sw" rect="(30, 0, 30, 55)" pt="(15, 50)" />
         <img key="war_nw" rect="(100, 0, 25, 55)" pt="(12, 50)" />
     </file>
