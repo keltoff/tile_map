@@ -1,6 +1,6 @@
-from gui import Widget, Button
-from graphics.sprite import Sprite
-from data_types.coords_ex import Pt, Dir
+from .gui import Widget, Button
+from .graphics.sprite import Sprite
+from .data_types.coords_ex import Pt, Dir
 import pygame
 
 

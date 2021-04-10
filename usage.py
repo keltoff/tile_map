@@ -1,12 +1,11 @@
 import pygame
-from map_storage.map_storage import MapSet
-from map_display import OrthoSketch, IsoSketch
-from data_types.zone import Zone
-from data_types.position import Position as Pos
-from graphics.storage import Storage
-from gui import Gui
-import usage_components as uc
-from geometry.topology import *
+from tile_map.map_storage.map_storage import MapSet
+from tile_map.map_display import IsoSketch
+from tile_map.data_types.position import Position as Pos
+from tile_map.graphics.storage import Storage
+from tile_map.gui import Gui
+from tile_map import usage_components as uc
+from tile_map.geometry.topology import *
 
 if __name__ == '__main__':
     pygame.init()

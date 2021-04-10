@@ -2,8 +2,8 @@ import os.path as path
 import xml.etree.ElementTree as et
 from ast import literal_eval as evaluate
 from .sprite import Sprite, DirectionSprite
-from data_types.position import Position
-from data_types.coords_ex import Pt
+from ..data_types.position import Position
+from ..data_types.coords_ex import Pt
 import pygame
 import pygame.transform
 from copy import copy
@@ -32,6 +32,10 @@ class Graphic:
 
         return Graphic(pygame.transform.flip(self.img, h, v), Pt(x, y))
 
+
+class Loop:
+    def __init__(self):
+        pass
 
 class Storage:
     def __init__(self):

@@ -1,4 +1,4 @@
-from data_types.coords_ex import Pt
+from ..data_types.coords_ex import Pt
 
 
 class Sprite:
@@ -17,3 +17,13 @@ class DirectionSprite(Sprite):
 
     def draw(self, target, pt: Pt):
         self.frames[pt.dir.dir].draw(target, pt)
+
+
+class IsoSprite(Sprite):
+    def __init__(self, loops, pos):
+        super().__init__(None, pos)
+        self.loops = loops
+        self.current_loop = None
+
+    def draw(self, target, pt):
+        pass

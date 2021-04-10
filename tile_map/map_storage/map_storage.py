@@ -1,5 +1,5 @@
 import xml.etree.ElementTree as et
-from data_types.position import Position
+from ..data_types.position import Position
 from ast import literal_eval as evaluate
 from itertools import product
 

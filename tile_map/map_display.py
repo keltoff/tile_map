@@ -1,9 +1,9 @@
-from data_types.coords import Pt
-from data_types.position import Position as Pos
-from geometry import projection
+from .data_types.coords import Pt
+from .data_types.position import Position as Pos
+from .geometry import projection
 import pygame
 from collections import namedtuple
-from gui import Widget
+from .gui import Widget
 
 
 TileRec = namedtuple('TileRec', 'terrain data state pos pt')
@@ -95,7 +95,7 @@ class Display():
             self.center_pos = position
 
     def pt_to_pos(self, pt):
-        pass
+        return self.back_buffer.get_pos(Pt(pt) - self.surface.get_abs_offset())
 
     def draw_tile(self, position: Pt, map_pos: Pos, key):
         pass
@@ -105,7 +105,7 @@ class Display():
 
     def handle(self, event: pygame.event.Event):
         if event.type in [pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP] and self.area.collidepoint(event.pos):
-            pos = self.back_buffer.get_pos(Pt(event.pos) - self.surface.get_abs_offset())
+            pos = self.pt_to_pos(event.pos)
             self.event_pos(pos, event.type, event.button)
 
     def event_pos(self, pos, event_type, button):

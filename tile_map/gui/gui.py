@@ -1,6 +1,6 @@
 import pygame.locals as pl
 
-from data_types.coords_ex import Pt
+from ..data_types.coords_ex import Pt
 
 
 class Gui:

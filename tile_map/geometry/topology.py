@@ -1,5 +1,5 @@
-from data_types.position import Position
-from data_types.zone import Zone
+from ..data_types.position import Position
+from ..data_types.zone import Zone
 
 
 class Topology:
