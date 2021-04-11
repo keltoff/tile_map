@@ -15,6 +15,14 @@ class Dir:  #(int):
     def __sub__(self, other):
         return self.__add__(-other)
 
+    def __eq__(self, other):
+        if isinstance(other, Dir):
+            return self.dir == other.dir
+        elif isinstance(other, int):
+            return self.dir == other
+        else:
+            return False
+
     def shift(self):
         if self.dir == 0:
             return 0, -1

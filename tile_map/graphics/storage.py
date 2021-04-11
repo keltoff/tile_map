@@ -1,7 +1,7 @@
 import os.path as path
 import xml.etree.ElementTree as et
 from ast import literal_eval as evaluate
-from .sprite import Sprite, DirectionSprite
+from .sprite import Sprite, DirectionSprite, IsoSprite
 from ..data_types.position import Position
 from ..data_types.coords_ex import Pt
 import pygame
@@ -34,8 +34,45 @@ class Graphic:
 
 
 class Loop:
-    def __init__(self):
-        pass
+    def __init__(self, times: [int], frames: [Graphic], looped=True):
+        self.frames = frames
+        self.times = times
+        self.looped = looped
+
+        self.t = 0
+        self.frame_idx = 0
+
+    def draw(self, target_surface, pt):
+        # self.update(blah)
+
+        self.frames[self.frame_idx].draw(target_surface, pt)
+
+    def update(self, ms):
+        self.t += ms
+
+        while self.t >= self.times[self.frame_idx]:
+            if self.done():
+                if self.looped:
+                    self.frame_idx = 0
+                else:
+                    self.t = self.times[self.frame_idx]
+                    break
+
+            self.t -= self.times[self.frame_idx]
+            self.frame_idx += 1
+
+    def done(self):
+        return self.frame_idx == len(self.frames) -1 and self.t >= self.times[self.frame_idx]
+
+
+
+    def clone(self, reverse=False):
+        if reverse:
+            frames = [f.flip(h=True) for f in self.frames]
+        else:
+            frames = self.frames
+        return Loop(self.times, frames, self.looped)
+
 
 class Storage:
     def __init__(self):
@@ -87,12 +124,22 @@ class Storage:
             frames = {dir: self[pattern].rotate(90 * dir) for dir in range(4)}
             return DirectionSprite(frames, pos)
 
+        elif type == 'animated':
+            loops = {loop_node.attrib['key']: self.parse_loop(loop_node)  for loop_node in node.findall('loop')}
+            modes = [mode_node.text for mode_node in node.findall('mode')]
+            return IsoSprite(loops, pos, modes)
+
     def load_graphic(self, key, h_flip=False):
         img = self[key]
         if h_flip:
             # img = pygame.transform.flip(img, h_flip, False)
             img = img.flip(h=h_flip)
         return img
+
+    def parse_loop(self, node):
+        times, frame_keys = zip(*[(int(n.attrib['t']), n.attrib['key']) for n in node.findall('frame')])
+        frames = [self.load_graphic(key) for key in frame_keys]
+        return Loop(times, frames, node.attrib.get('looped', False))
 
 
 def load_image(filename, transparency=None):
