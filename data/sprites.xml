@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <graphics>
-	<file path="file_path" transparent="top_left">
+	<file path="warriorF.png" transparent="top_left">
 		<img key="war_0_0" rect="(4, 2, 26, 52)" pt="(16, 48)"/>
 		<img key="war_0_1" rect="(38, 2, 22, 52)" pt="(48, 48)"/>
 		<img key="war_0_2" rect="(70, 2, 21, 52)" pt="(80, 48)"/>
@@ -37,7 +37,7 @@
 		<img key="war_15_3" rect="(126, 826, 30, 51)" pt="(140, 871)"/>
 		<img key="war_15_4" rect="(166, 826, 30, 51)" pt="(180, 871)"/>
 	</file>
-    <file path="file_path" transparent="top_left">
+    <file path="jennifer.png" transparent="top_left">
 		<img key="jen_0_0" rect="(6, 3, 24, 50)" pt="(17, 47)"/>
 		<img key="jen_0_1" rect="(38, 2, 25, 52)" pt="(50, 48)"/>
 		<img key="jen_0_2" rect="(69, 2, 26, 53)" pt="(81, 49)"/>
@@ -74,12 +74,18 @@
 		<img key="jen_16_6" rect="(194, 885, 27, 48)" pt="(207, 927)"/>
 		<img key="jen_16_7" rect="(226, 885, 27, 48)" pt="(239, 927)"/>
 	</file>
-    <sprite key="war">
-        <modes>
-            walk
-            block
-            aim
-        </modes>
+    <sprite key="war" type="animated">
+        <mode>stand</mode>
+        <mode>walk</mode>
+        <mode>block</mode>
+        <mode>aim</mode>
+        <loop key="stand_f" looped="True">
+            <frame t="1000" key="war_0_1" />
+        </loop>
+        <loop key="stand_r" looped="True">
+            <frame t="1000" key="war_0_3" />
+        </loop>
+
         <loop key="walk_f">
             <frame t="200" key="war_1_0" />
             <frame t="200" key="war_1_1" />
@@ -123,13 +129,18 @@
             <frame t="200" key="war_7_3" />
         </loop>
     </sprite>
-    <sprite key="jen">
-        <modes>
-            walk
-            block
-            aim
-        </modes>
-        <loop key="walk_f">
+    <sprite key="jen" type="animated">
+        <mode>stand</mode>
+        <mode>walk</mode>
+        <mode>block</mode>
+        <mode>aim</mode>
+        <loop key="stand_f" looped="True">
+            <frame t="1000" key="jen_0_1" />
+        </loop>
+        <loop key="stand_r" looped="True">
+            <frame t="1000" key="jen_0_3" />
+        </loop>
+        <loop key="walk_f" looped="True">
             <frame t="200" key="jen_1_0" />
             <frame t="200" key="jen_1_1" />
             <frame t="200" key="jen_1_2" />
@@ -137,7 +148,7 @@
             <frame t="200" key="jen_1_4" />
             <frame t="200" key="jen_1_5" />
         </loop>
-        <loop key="walk_r">
+        <loop key="walk_r" looped="True">
             <frame t="200" key="jen_2_0" />
             <frame t="200" key="jen_2_1" />
             <frame t="200" key="jen_2_2" />

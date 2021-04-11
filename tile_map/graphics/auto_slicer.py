@@ -16,7 +16,7 @@ def iterate_over(array: pygame.PixelArray):
 def raw_components(image: pygame.Surface):
     im_array = pygame.PixelArray(image)
 
-    com_map = pygame.Surface(img.surface.get_size())
+    com_map = pygame.Surface(image.get_size())
     components = pygame.PixelArray(com_map)
 
     neighbors = set()
@@ -169,7 +169,7 @@ def save_xml(xml_file_path, img_file_name, bb_grid):
 
             ET.SubElement(file_node, "img", key=f'{prefix}_{iy}_{ix}',
                                             rect=f'({x0}, {y0}, {x1 - x0 +1}, {y1 - y0 + 1})',
-                                            pt=f'({int((x0 + x1) / 2)}, {y1 - 5})')
+                                            pt=f'({int((x1 - x0) / 2)}, {y1 - y0 - 5})')
 
     with open(xml_file_path, 'w') as file:
         xml_str = xml.dom.minidom.parseString(ET.tostring(root)).toprettyxml()
@@ -178,8 +178,8 @@ def save_xml(xml_file_path, img_file_name, bb_grid):
 
 if __name__ == '__main__':
     data_dir = '../../data/'
-    img_file = 'jennifer.png'
-    # img_file = 'warriorF.png'
+    # img_file = 'jennifer.png'
+    img_file = 'warriorF.png'
 
     # prefix = 'jen2'
     prefix = img_file[:3]
