@@ -43,7 +43,7 @@ class KeyBuffer:
             return pygame.Color(new_color)
 
 
-class Display():
+class Display:
     def __init__(self, target, projection, map):
         # super().__init__(area=pygame.Rect(target.get_abs_offset(), target.get_size()))
         self.map = map
@@ -145,9 +145,9 @@ class IsoSketch(Display):
         proj = projection.Iso(scale=tile_size, tilt=tilt)
         Display.__init__(self, target, projection=proj, map=map)
 
-        self.tile_w = tile_size
-        self.tile_h = int(tile_size * proj.y_skew)
-        self.tile_d = int(tile_size * proj.z_skew)
+        self.tile_w = int(proj.x_step)
+        self.tile_h = int(proj.y_step)
+        self.tile_d = int(proj.z_step)
 
     def draw_tile(self, position: Pt, pos: Pos, data):
         color = data['color']  # pygame.Color('cyan')
