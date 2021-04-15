@@ -23,6 +23,9 @@ class Dir:  #(int):
         else:
             return False
 
+    def __hash__(self):
+        return hash(self.dir)
+
     def shift(self):
         if self.dir == 0:
             return 0, -1

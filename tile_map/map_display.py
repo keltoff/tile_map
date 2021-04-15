@@ -1,5 +1,6 @@
 from .data_types.coords import Pt
 from .data_types.position import Position as Pos
+from .data_types.direction import Dir
 from .geometry import projection
 import pygame
 from collections import namedtuple
@@ -72,7 +73,12 @@ class Display:
 
             for z in self.zones:
                 if tile.pos in z:
-                    self.mark_tile(tile.pt + correction, fill=z.color)
+                    if z.filled:
+                        self.mark_tile(tile.pt + correction, fill=z.color)
+                    else:
+                        needs_border =  {direction: tile.pos.shifted(*direction.shift()) not in z for
+                                         direction in [Dir.up(), Dir.left(), Dir.down(), Dir.right()] }
+                        self.frame_tile(tile.pt + correction, needs_border, z.color)
 
             if tile.pos.same_place(self.selected_tile):
                 self.mark_tile(tile.pt + correction, border=pygame.Color('white'))
@@ -101,6 +107,9 @@ class Display:
         pass
 
     def mark_tile(self, position: Pt, border=None, fill=None):
+        pass
+
+    def frame_tile(self, position: Pt, sides, color):
         pass
 
     def handle(self, event: pygame.event.Event):
@@ -186,6 +195,15 @@ class IsoSketch(Display):
 
         if fill:
             pygame.draw.polygon(self.surface, fill, points, 0)
+
+    def frame_tile(self, position: Pt, sides, color):
+        points = [position - Pt(self.tile_w - 5, 0),
+                  position - Pt(0, self.tile_h - 3),
+                  position + Pt(self.tile_w - 5, 0),
+                  position + Pt(0, self.tile_h - 3)]
+        for i, direction in enumerate([Dir.left(), Dir.up(), Dir.right(), Dir.down()]):
+            if sides[direction]:
+                pygame.draw.line(self.surface, color, points[i], points[(i+1) % 4], width=2)
 
 
 def bordered_polygon(surface, color, points, width=2):
