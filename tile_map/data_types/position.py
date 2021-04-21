@@ -36,5 +36,5 @@ class Position:
         else:
             return self.x == other.x and self.y == other.y
 
-    def __str__(self):
+    def __repr__(self):
         return '<{x}, {y}{z}> - {d}'.format(x=self.x, y=self.y, d=self.dir, z=', ^{}'.format(self.z) if self.z else '')
