@@ -73,12 +73,13 @@ class Display:
 
             for z in self.zones:
                 if tile.pos in z:
-                    if z.filled:
+                    if z.color:
                         self.mark_tile(tile.pt + correction, fill=z.color)
-                    else:
+
+                    if z.border:
                         needs_border =  {direction: tile.pos.shifted(*direction.shift()) not in z for
                                          direction in [Dir.up(), Dir.left(), Dir.down(), Dir.right()] }
-                        self.frame_tile(tile.pt + correction, needs_border, z.color)
+                        self.frame_tile(tile.pt + correction, needs_border, z.border)
 
             if tile.pos.same_place(self.selected_tile):
                 self.mark_tile(tile.pt + correction, border=pygame.Color('white'))
@@ -148,6 +149,14 @@ class OrthoSketch(Display):
         if fill:
             pygame.draw.rect(self.surface, fill, rect, 0)
 
+    def frame_tile(self, position: Pt, sides, color):
+        points = [position - Pt(self.tile_size - 3, 0),
+                  position - Pt(0, self.tile_size - 3),
+                  position + Pt(self.tile_size - 3, 0),
+                  position + Pt(0, self.tile_size - 3)]
+        for i, direction in enumerate([Dir.left(), Dir.up(), Dir.right(), Dir.down()]):
+            if sides[direction]:
+                pygame.draw.line(self.surface, color, points[i], points[(i+1) % 4], width=2)
 
 class IsoSketch(Display):
     def __init__(self, target, map, tile_size=10, tilt=45):
