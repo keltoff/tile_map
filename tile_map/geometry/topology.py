@@ -29,7 +29,10 @@ class Topology:
                     path = [pos2]
                     cursor = node
                     while cursor != pos1:
-                        path.append(cursor)
+                        # path.append(cursor)
+                        path_segment = Position(cursor.x, cursor.y, cursor.z, cls.dir_from(cursor, prev[cursor]))  #TODO should be less clumsy
+                        path.append(path_segment)
+
                         cursor = prev[cursor]
                     return list(reversed(path))
 
