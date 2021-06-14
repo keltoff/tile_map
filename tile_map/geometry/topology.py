@@ -47,11 +47,41 @@ class Topology:
 
     @classmethod
     def trace_shot(cls, origin: Position, target: Position):
-        # TODO proper line-of-sight tracing
-        return cls.find_path(origin, target)
+        shift_prime, steps_prime, shift_sec, steps_sec = cls.decompose_shifts(origin, target)
+
+        acc = 0.5
+        slope_h = steps_sec / steps_prime
+        height = origin.z
+        slope_z = (target.z - origin.z) / (steps_prime + steps_sec)
+
+        shot = []
+
+        pos = origin
+        for p in range(steps_prime):
+            pos = pos.shifted(*shift_prime)
+
+            height += slope_z
+            pos.z = int(round(height))
+
+            shot.append(pos)
+
+            acc += slope_h
+
+            if acc > 1.0:
+                acc -= 1.0
+                pos = pos.shifted(*shift_sec)
+                height += slope_z
+                pos.z = int(round(height))
+                shot.append(pos)
+
+        return shot
 
     @classmethod
     def dir_to(cls, pos: Position, target: Position):
+        raise NotImplemented()
+
+    @classmethod
+    def decompose_shifts(cls, origin: Position, target: Position):
         raise NotImplemented()
 
     @classmethod
@@ -119,6 +149,27 @@ class Flat4(Topology):
                 return Dir(2)
             else:
                 return Dir(0)
+
+    @classmethod
+    def decompose_shifts(cls, origin: Position, target: Position):
+        dx, dy = target.x - origin.x, target.y - origin.y
+        adx, ady = abs(dx), abs(dy)
+        steps_prime, steps_sec = max(adx, ady), min(adx, ady)
+
+        if adx > ady:
+            shift_prime = dx / adx, 0
+        else:
+            shift_prime = 0, dy / ady
+
+        if steps_sec == 0:
+            shift_sec = 0, 0
+        else:
+            if adx > ady:
+                shift_sec = 0, dy / ady
+            else:
+                shift_sec = dx / adx, 0
+
+        return shift_prime, steps_prime, shift_sec, steps_sec
 
 
 class Flat8(Topology):
