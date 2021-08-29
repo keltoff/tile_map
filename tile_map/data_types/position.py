@@ -18,6 +18,18 @@ class Position:
         new_pos.z += dz
         return new_pos
 
+    def but(self, x=None, y=None, z=None, dir=None):
+        result = self.__copy__()
+        if x is not None:
+            result.x = x
+        if y is not None:
+            result.y = y
+        if z is not None:
+            result.z = z
+        if dir is not None:
+            result.dir = dir
+        return result
+
     def fwd(self):
         return self.shifted(*self.dir.shift())
 
@@ -35,6 +47,10 @@ class Position:
             return False
         else:
             return self.x == other.x and self.y == other.y
+
+    @property
+    def place(self):
+        return self.x, self.y
 
     def __repr__(self):
         return '<{x}, {y}{z}> - {d}'.format(x=self.x, y=self.y, d=self.dir, z=', ^{}'.format(self.z) if self.z else '')

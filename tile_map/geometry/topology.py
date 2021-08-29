@@ -16,10 +16,13 @@ class Topology:
         pass
 
     @classmethod
-    def find_path(cls, pos1: Position, pos2: Position):
+    def find_path(cls, pos1: Position, pos2: Position, passable: lambda pos: True):
         open = [pos1]
         closed = []
         prev = dict()
+
+        if not (pos2 and passable(pos2)):
+            return None
 
         while open:
             node = open.pop(0)
@@ -30,17 +33,20 @@ class Topology:
                     cursor = node
                     while cursor != pos1:
                         # path.append(cursor)
-                        path_segment = Position(cursor.x, cursor.y, cursor.z, cls.dir_from(cursor, prev[cursor]))  #TODO should be less clumsy
+                        path_segment = cursor.but(dir=cls.dir_from(cursor, prev[cursor]))
                         path.append(path_segment)
 
                         cursor = prev[cursor]
                     return list(reversed(path))
 
-                if n not in closed:
-                    open.append(n)
-                    prev[n] = node
+                if n.place not in closed:
+                    if passable(n):
+                        open.append(n)
+                        prev[n] = node
+                    else:
+                        closed.append(n.place)
 
-            closed.append(node)
+            closed.append(node.place)
             open = sorted(open, key=lambda a: cls.distance(a, pos2))
 
         return None
