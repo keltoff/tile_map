@@ -39,9 +39,9 @@ class MapSet:
             att = ter.attrib
             self.terrain[att['key']] = TerrainType(att)
 
-        start_node = data.find('player')
-        self.current = start_node.attrib['map']
-        self.start_position = pos_from_xml(start_node)
+        # start_node = data.find('player')
+        # self.current = start_node.attrib['map']
+        # self.start_position = pos_from_xml(start_node)
 
     @property
     def actual(self):
@@ -50,21 +50,20 @@ class MapSet:
 
 class MapData:
     def __init__(self):
-        self.data = None
+        # self.data = None
         self.layers = dict()
         # self.terrain = None
-        self.out_terrain = None
         self.state = dict()
         self.map_set = None
         self.name = None
 
+    @property
+    def data(self):
+        return self.layers['terrain']
+
     def __getitem__(self, item):
         if isinstance(item, tuple):
-            x, y = item
-            if len(self.data) > y and len(self.data[y]) > x:
-                return self.data[y][x]
-            else:
-                return self.out_terrain
+            return self.data[item]
         elif isinstance(item, Position):
             return self[item.x, item.y]
         else:
@@ -77,9 +76,9 @@ class MapData:
             yield x, y, ter, state
 
     def tiles(self):
-        for y, x in product(range(len(self.data)), range(len(self.data[0]))):
+        for y, x in product(range(self.data.height), range(self.data.width)):
             pos = Position(x, y)
-            ter = self.map_set.terrain[self.data[y][x]]
+            ter = self.map_set.terrain[self.data[x, y]]
             state = self.state_at(pos)
             data = {l_name: self.layers[l_name][pos] for l_name in self.layers}
             data['color'] = ter['color']
@@ -92,9 +91,8 @@ class MapData:
     @staticmethod
     def from_xml(node, mapset):
         new = MapData()
-        new.data = [s.strip() for s in node.find('data').text.split()]
+        # new.data = [s.strip() for s in node.find('data').text.split()]
         new.layers = {l.name: l for l in (Layer.from_xml(ln) for ln in node.findall('layer'))}
-        new.out_terrain = node.attrib['outside']
         new.map_set = mapset
         new.name = node.attrib['name']
         return new
@@ -114,11 +112,11 @@ class MapData:
 
     @property
     def width(self):
-        return len(self.data[0])
+        return self.data.width
 
     @property
     def height(self):
-        return len(self.data)
+        return self.data.height
 
     def terrain_at(self, pos):
         ter = self[pos]
@@ -140,7 +138,7 @@ class MapData:
 
     def is_different(self, x, y, ter):
         if 0 <= y < len(self.data) and 0 <= x < len(self.data[y]):
-            return self.data[y][x] != ter['key']
+            return self.data[x, y] != ter['key']
         else:
             return False
 
@@ -157,8 +155,12 @@ class TerrainType:
     def free(self):
         return self['free'] in ['true', 'True', '1', True]
 
+    def get_b(self, index):
+        return self.stats.get(index, False) in ['true', 'True', '1', True]
+
     def get_n(self, index):
         return int(self.stats.get(index, 0))
+
 
 
 class MapState:

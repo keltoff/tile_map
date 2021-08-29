@@ -48,6 +48,7 @@ class Display:
     def __init__(self, target, projection, map):
         # super().__init__(area=pygame.Rect(target.get_abs_offset(), target.get_size()))
         self.map = map
+        self.map.current = 'default'
         self.projection = projection
         self.surface = target
         self.area = pygame.Rect(target.get_abs_offset(), target.get_size())
@@ -125,6 +126,16 @@ class Display:
             self.center_pos = pos
         else:
             print('Event (b:{}, t:{}) at pos {}'.format(button, event_type, pos))
+
+    def is_passable(self, pos: Pos):
+        """Can z=you walk through the tile? """
+        terrain = self.map.map_set.terrain[self.map[pos]]
+        return not (terrain.get_b('block_walk') or any(pos.same_place(s.pos) for s in self.sprites))
+
+    def is_clear(self, pos: Pos):
+        """ Is the tile clear for LoS effect? """
+        terrain = self.map.map_set.terrain[self.map[pos]]
+        return not (terrain.get_b('block_shoot') or any(pos.same_place(s.pos) for s in self.sprites))
 
 
 class OrthoSketch(Display):
