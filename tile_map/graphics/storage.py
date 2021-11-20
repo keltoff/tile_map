@@ -64,8 +64,6 @@ class Loop:
     def done(self):
         return self.frame_idx == len(self.frames) -1 and self.t >= self.times[self.frame_idx]
 
-
-
     def clone(self, reverse=False):
         if reverse:
             frames = [f.flip(h=True) for f in self.frames]
@@ -137,8 +135,11 @@ class Storage:
         return img
 
     def parse_loop(self, node):
-        times, frame_keys = zip(*[(int(n.attrib['t']), n.attrib['key']) for n in node.findall('frame')])
-        frames = [self.load_graphic(key) for key in frame_keys]
+        times, frame_keys, flipped = zip(*[(int(n.attrib['t']),
+                                            n.attrib['key'],
+                                            n.attrib.get('reversed', False) in ['True', 'true'])
+                                           for n in node.findall('frame')])
+        frames = [self.load_graphic(key, h_flip=flip) for key, flip in zip(frame_keys, flipped)]
         return Loop(times, frames, node.attrib.get('looped', False))
 
 

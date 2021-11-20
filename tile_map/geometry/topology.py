@@ -163,17 +163,17 @@ class Flat4(Topology):
         steps_prime, steps_sec = max(adx, ady), min(adx, ady)
 
         if adx > ady:
-            shift_prime = dx / adx, 0
+            shift_prime = int(dx / adx), 0
         else:
-            shift_prime = 0, dy / ady
+            shift_prime = 0, int(dy / ady)
 
         if steps_sec == 0:
             shift_sec = 0, 0
         else:
             if adx > ady:
-                shift_sec = 0, dy / ady
+                shift_sec = 0, int(dy / ady)
             else:
-                shift_sec = dx / adx, 0
+                shift_sec = int(dx / adx), 0
 
         return shift_prime, steps_prime, shift_sec, steps_sec
 

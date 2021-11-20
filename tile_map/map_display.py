@@ -128,7 +128,7 @@ class Display:
             print('Event (b:{}, t:{}) at pos {}'.format(button, event_type, pos))
 
     def is_passable(self, pos: Pos):
-        """Can z=you walk through the tile? """
+        """Can you walk through the tile? """
         terrain = self.map.map_set.terrain[self.map[pos]]
         return not (terrain.get_b('block_walk') or any(pos.same_place(s.pos) for s in self.sprites))
 

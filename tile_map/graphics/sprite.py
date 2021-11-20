@@ -5,7 +5,6 @@ class Sprite:
     def __init__(self, img, pos):
         self.graphic = img
         self.pos = pos
-        self.pawn = None  # TODO move to descendant class
 
     def draw(self, target, pt):
         self.graphic.draw(target, pt)
