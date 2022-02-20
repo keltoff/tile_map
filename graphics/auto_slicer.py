@@ -177,9 +177,10 @@ def save_xml(xml_file_path, img_file_name, bb_grid):
 
 
 if __name__ == '__main__':
-    data_dir = '../../data/'
+    data_dir = '../data/'
     # img_file = 'jennifer.png'
-    img_file = 'warriorF.png'
+    # img_file = 'warriorF.png'
+    img_file = 'boxes.png'
 
     # prefix = 'jen2'
     prefix = img_file[:3]

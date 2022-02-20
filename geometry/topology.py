@@ -16,7 +16,7 @@ class Topology:
         pass
 
     @classmethod
-    def find_path(cls, pos1: Position, pos2: Position, passable: lambda pos: True):
+    def find_path(cls, pos1: Position, pos2: Position, passable=lambda pos: True):
         open = [pos1]
         closed = []
         prev = dict()

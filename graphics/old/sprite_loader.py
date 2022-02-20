@@ -6,7 +6,7 @@ import pygame
 
 from auxiliary import Pt, SafeDict
 
-sprite_dir = '.'
+sprite_dir = ''
 
 
 def load(filename):
