@@ -43,7 +43,7 @@ class Position:
         return self.shifted(*(self.dir + Dir.right()).shift())
 
     def same_place(self, other):
-        if other is None:
+        if self is None or other is None:
             return False
         else:
             return self.x == other.x and self.y == other.y

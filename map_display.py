@@ -147,8 +147,8 @@ class OrthoSketch(Display):
 
     def draw_tile(self, position: Pt, pos: Pos, data):
         color = data['color']  # pygame.Color('cyan')
-        rect = pygame.Rect(position.x, position.y, 0, 0).inflate(self.tile_size - 2, self.tile_size - 2)
-        pygame.draw.rect(self.surface, color, rect, 2)
+        rect = pygame.Rect(position.x, position.y, 1, 1).inflate(self.tile_size - 3, self.tile_size - 3)
+        pygame.draw.rect(self.surface, color, rect, 3)
         self.back_buffer.mark_rect(rect, pos)
 
     def mark_tile(self, position: Pt, border=None, fill=None):
@@ -161,13 +161,15 @@ class OrthoSketch(Display):
             pygame.draw.rect(self.surface, fill, rect, 0)
 
     def frame_tile(self, position: Pt, sides, color):
-        points = [position - Pt(self.tile_size - 3, 0),
-                  position - Pt(0, self.tile_size - 3),
-                  position + Pt(self.tile_size - 3, 0),
-                  position + Pt(0, self.tile_size - 3)]
+        side = self.tile_size/2 - 2
+        points = [position + Pt(-side, side),
+                  position + Pt(-side, -side),
+                  position + Pt(side, -side),
+                  position + Pt(side, side)]
         for i, direction in enumerate([Dir.left(), Dir.up(), Dir.right(), Dir.down()]):
             if sides[direction]:
                 pygame.draw.line(self.surface, color, points[i], points[(i+1) % 4], width=2)
+
 
 class IsoSketch(Display):
     def __init__(self, target, map, tile_size=10, tilt=45):

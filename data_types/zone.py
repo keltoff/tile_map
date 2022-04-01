@@ -16,11 +16,15 @@ class Zone:
     def paint(self, color=None, border=None):
         if color is None:
             color = self.color
+        else:
+            color = pygame.Color(color)
 
         if border is None:
             border = self.border
+        else:
+            border = pygame.Color(border)
 
-        return Zone(self.positions.copy(), color=pygame.Color(color), border=pygame.Color(border))
+        return Zone(self.positions.copy(), color=color, border=border)
 
 
 class LambdaZone:

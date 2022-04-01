@@ -47,6 +47,10 @@ class Pt(tuple):
     def __repr__(self):
         return '(x: {}, y: {})'.format(*self)
 
+    @property
+    def x(self):
+        return self[0]
 
-Pt.x = property(operator.itemgetter(0))
-Pt.y = property(operator.itemgetter(1))
+    @property
+    def y(self):
+        return self[1]
