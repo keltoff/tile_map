@@ -11,6 +11,9 @@ class Position:
     def __copy__(self):
         return Position(self.x, self.y, self.z, self.dir)
 
+    def __hash__(self):
+        return self.place.__hash__()
+
     def shifted(self, dx, dy, dz=0):
         new_pos = self.__copy__()
         new_pos.x += dx
