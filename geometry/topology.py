@@ -6,10 +6,14 @@ from ..data_types.zone import Zone, LambdaZone
 class Topology:
     def __init__(self):
         pass
+    
+    @classmethod
+    def directions(cls):
+        raise NotImplemented()
 
     @classmethod
     def neighbors(cls, pos: Position):
-        return []
+        return [pos.shifted(*d) for d in cls.directions()]
 
     @classmethod
     def distance(cls, pos1: Position, pos2: Position):
@@ -122,21 +126,15 @@ class Topology:
 
 class Flat4(Topology):
     @classmethod
-    def neighbors(cls, pos: Position):
-        return [pos.shifted(0, 1), pos.shifted(1, 0), pos.shifted(0, -1), pos.shifted(-1, 0)]
-
-    @classmethod
-    def _dxy_(cls, pos1, pos2):
-        dx = pos2.x - pos1.x
-        dy = pos2.y - pos1.y
-        return dx, dy
-
+    def directions(cls):
+        return [(0, 1), (1, 0), (0, -1), (-1, 0)]
+    
     @classmethod
     def distance(cls, pos1, pos2):
         #return abs(pos1.x - pos2.x) + abs(pos1.y - pos2.y)
 
         # using distance from Flat8 so pathfinding doesn't look THAT weird
-        adx, ady = map(abs, cls._dxy_(pos1, pos2))
+        adx, ady = map(abs, _dxy_(pos1, pos2))
         if adx > ady:
             return adx + 0.4 * ady
         else:
@@ -144,7 +142,7 @@ class Flat4(Topology):
 
     @classmethod
     def dir_to(cls, pos: Position, target: Position):
-        dx, dy = cls._dxy_(pos, target)
+        dx, dy = _dxy_(pos, target)
         if abs(dx) > abs(dy):
             if dx > 0:
                 return Dir(1)
@@ -180,10 +178,9 @@ class Flat4(Topology):
 
 class Flat8(Topology):
     @classmethod
-    def neighbors(cls, pos: Position):
-        return [pos.shifted(0, 1), pos.shifted(1, 1), pos.shifted(1, 0), pos.shifted(1, -1),
-                pos.shifted(0, -1), pos.shifted(-1, -1), pos.shifted(-1, 0), pos.shifted(-1, 1)]
-
+    def directions(cls):
+        return [(0, 1), (1, 1), (1, 0), (1, -1), (0, -1), (-1, -1), (-1, 0), (-1, 1)]
+    
     @classmethod
     def distance(cls, pos1, pos2):
         #return abs(pos1.x - pos2.x) + abs(pos1.y - pos2.y)
@@ -193,3 +190,47 @@ class Flat8(Topology):
             return dx + 0.4 * dy
         else:
             return dy + 0.4 * dx
+
+
+class Hexa(Topology):
+    @classmethod
+    def directions(cls):
+        return [(0, 1), (1, 1), (1, 0), (0, -1), (-1, -1), (-1, 0)]
+
+    @classmethod
+    def distance(cls, pos1, pos2):
+        return sum(cls.decompose_shifts(pos1, pos2))
+
+    @classmethod
+    def dir_to(cls, pos: Position, target: Position):
+        shifts = list(cls.decompose_shifts(pos, target).values())
+        idx = shifts.index(max(shifts))
+        return Dir(idx)  # TODO we need Dir6
+
+    @classmethod
+    def decompose_shifts(cls, origin: Position, target: Position):
+        dx, dy = _dxy_(origin, target)
+
+        factors = {d: _divide((dx, dy), d) for d in cls.directions()}
+        for d in cls.directions():
+            for d2 in cls.directions():
+                if d != d2 and _divide(d2, d) > 0:
+                    factors[d2] -= factors[d]
+
+        return factors
+        # return shift_prime, steps_prime, shift_sec, steps_sec
+
+
+def _dxy_(pos1: Position, pos2: Position):
+    dx = pos2.x - pos1.x
+    dy = pos2.y - pos1.y
+    return dx, dy
+
+
+def _divide(xy, divxy):
+    x, y = xy
+    dx, dy = divxy
+    if x * dx <= 0 or y * dy <= 0:
+        return 0
+    else:
+        return min(x // dx, y // dy)
