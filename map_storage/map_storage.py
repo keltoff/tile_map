@@ -2,6 +2,7 @@ import xml.etree.ElementTree as et
 from ..data_types.position import Position
 from ast import literal_eval as evaluate
 from itertools import product
+from .layers import DataLayer
 
 
 class MapStorage:
@@ -81,7 +82,7 @@ class MapData:
             ter = self.map_set.terrain[self.data[x, y]]
             state = self.state_at(pos)
             data = {l_name: self.layers[l_name][pos] for l_name in self.layers}
-            data['color'] = ter['color']
+            data['terrain'] = ter
             pos.z = int(data.get('height', 0))
             yield pos, ter, data, state
 
@@ -92,7 +93,7 @@ class MapData:
     def from_xml(node, mapset):
         new = MapData()
         # new.data = [s.strip() for s in node.find('data').text.split()]
-        new.layers = {l.name: l for l in (Layer.from_xml(ln) for ln in node.findall('layer'))}
+        new.layers = {l.name: l for l in (DataLayer.from_xml(ln) for ln in node.findall('layer'))}
         new.map_set = mapset
         new.name = node.attrib['name']
         return new
@@ -162,7 +163,6 @@ class TerrainType:
         return int(self.stats.get(index, 0))
 
 
-
 class MapState:
     def __init__(self, attributes=None):
         self.stats = attributes if attributes else dict()
@@ -174,41 +174,6 @@ class MapState:
     @visible.setter
     def visible(self, val):
         self.stats["visible"] = val
-
-
-class Layer:
-    def __init__(self):
-        self.name = None
-        self.data = None
-        self.outside = None
-
-    def __getitem__(self, item):
-        if isinstance(item, tuple):
-            x, y = item
-            if len(self.data) > y and len(self.data[y]) > x:
-                return self.data[y][x]
-            else:
-                return self.outside
-        elif isinstance(item, Position):
-            return self[item.x, item.y]
-        else:
-            return None
-
-    @property
-    def width(self):
-        return len(self.data[0])
-
-    @property
-    def height(self):
-        return len(self.data)
-
-    @staticmethod
-    def from_xml(node):
-        new = Layer()
-        new.data = [s.strip() for s in node.text.split()]
-        new.name = node.attrib['name']
-        new.outside = node.attrib.get('outside', None)
-        return new
 
 
 def pos_from_xml(node):
