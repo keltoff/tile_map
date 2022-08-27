@@ -1,6 +1,6 @@
 import pygame
 from .map_storage.map_storage import MapSet
-from .map_display import OrthoSketch, IsoSketch
+from tile_map.gui.map_display import OrthoSketch, IsoSketch
 from .data_types.zone import Zone
 from .data_types.position import Position as Pos
 from .graphics.storage import Storage
