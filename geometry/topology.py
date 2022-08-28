@@ -61,8 +61,9 @@ class Topology:
 
     @classmethod
     def trace_shot(cls, origin: Position, target: Position):
-        shift_prime, steps_prime, shift_sec, steps_sec = cls.decompose_shifts(origin, target)
-
+        decomposition = cls.decompose_shifts(origin, target)
+        (shift_prime, steps_prime), (shift_sec, steps_sec), *_ = sorted(decomposition.items(),
+                                                                        key=lambda kv: kv[1], reverse=True)
         acc = 0.5
         slope_h = steps_sec / steps_prime
         height = origin.z
