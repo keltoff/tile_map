@@ -1,11 +1,11 @@
-from tile_map.data_types.coords import Pt
-from tile_map.data_types.position import Position as Pos
-from tile_map.data_types.direction import Dir
-from tile_map.geometry import projection
-import pygame
 from collections import namedtuple
-from tile_map.gui import Widget
 
+import pygame
+
+from tile_map.data_types.coords import Pt
+from tile_map.data_types.direction import Dir
+from tile_map.data_types.position import Position as Pos
+from tile_map.geometry.projection import Projection
 
 TileRec = namedtuple('TileRec', 'terrain data state pos pt')
 
@@ -45,7 +45,7 @@ class KeyBuffer:
 
 
 class BaseMapDisplay:
-    def __init__(self, target, projection, map):
+    def __init__(self, target: pygame.Surface, projection: Projection, map):
         # super().__init__(area=pygame.Rect(target.get_abs_offset(), target.get_size()))
         self.map = map
         self.map.current = 'default'
