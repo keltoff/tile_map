@@ -29,7 +29,7 @@ class ObjectLayer(BaseLayer):
 
     def move(self, item, position):
         if item in self.object_positions:
-            self.objects_at_pos[item.pos].delete(item)
+            self.objects_at_pos[item.pos.place].remove(item)
 
         self.add(item, position)
 
@@ -37,5 +37,27 @@ class ObjectLayer(BaseLayer):
         if item in self.object_positions:
             self.objects_at_pos[item.pos.place].remove(item)
             # self.object_positions[item] = None
+            self.object_positions.pop(item)
+            item.pos = None
+
+
+class SingleObjectLayer(ObjectLayer):
+    def at(self, x, y):
+        return self.objects_at_pos.get((x, y), None)
+
+    def add(self, item, position):
+        self.objects_at_pos[position] = item
+        self.object_positions[item] = position
+        item.pos = Position(*position)
+
+    def move(self, item, position):
+        if item in self.object_positions:
+            self.objects_at_pos[item.pos.place] = None
+
+        self.add(item, position)
+
+    def remove(self, item):
+        if item in self.object_positions:
+            self.objects_at_pos[item.pos.place] = None
             self.object_positions.pop(item)
             item.pos = None
