@@ -69,3 +69,132 @@ class Dir:  #(int):
     @staticmethod
     def left():
         return Dir(3)
+
+
+class DirBase:
+    shifts = {}
+    labels = {}
+
+    def __init__(self, init_dir=0):
+        if isinstance(init_dir, Dir):
+            init_dir = init_dir.dir
+
+        self.dir = init_dir
+
+    @classmethod
+    def directions(cls):
+        return len(cls.shifts)
+
+    def angle(self):
+        return -360 / self.directions() * self.dir
+
+    def __add__(self, other):
+        return Dir((self.dir + other) % self.directions())
+
+    def __sub__(self, other):
+        return self.__add__(-other)
+
+    def __eq__(self, other):
+        if isinstance(other, self.__class__):
+            return self.dir == other.dir
+        elif isinstance(other, int):
+            return self.dir == other
+        else:
+            return False
+
+    def __hash__(self):
+        return hash(self.dir)
+
+    def shift(self):
+        self._lookup(self.shifts)
+
+    def __str__(self):
+        return self._lookup(self.labels)
+
+    def __repr__(self):
+        return f'{self.dir} ({self._lookup(self.labels)})'
+
+    def lt(self):
+        return self - 1
+
+    def rt(self):
+        return self + 1
+
+    def _lookup(self, field):
+        if self.dir in field:
+            return field[self.dir]
+        else:
+            raise Exception('Invalid Dir instance', self.dir)
+
+
+class Dir4(DirBase):
+    shifts = {0: (0, -1),
+              1: (1, 0),
+              2: (0, 1),
+              3: (-1, 0)}
+    labels = {0: 'A', 1: '>', 2: 'V', 3: '<'}
+
+    @staticmethod
+    def up():
+        return Dir(0)
+
+    @staticmethod
+    def right():
+        return Dir(1)
+
+    @staticmethod
+    def down():
+        return Dir(2)
+
+    @staticmethod
+    def left():
+        return Dir(3)
+
+
+class Dir8(DirBase):
+    shifts = {0: (0, -1),
+              1: (1, -1),
+              2: (1, 0),
+              3: (1, 1),
+              4: (0, 1),
+              5: (-1, 1),
+              6: (-1, 0),
+              7: (-1, -1)}
+    labels = {0: 'A', 1: '/|', 2: '>', 3: '\\|', 4: 'V',  5: '|/', 6: '<', 7: '|\\'}
+
+
+class Dir6H(DirBase):
+    shifts = {0: (0, -1),
+              1: (1, 0),
+              2: (1, 1),
+              3: (0, 1),
+              4: (-1, 0),
+              5: (-1, -1)}
+    labels = {0: '/|', 1: '>', 2: '\\|', 3: '|/', 4: '<', 5: '|\\'}
+
+    def angle(self):
+        return 30 - 60 * self.dir
+
+    @staticmethod
+    def right_up():
+        return Dir(0)
+
+    @staticmethod
+    def right():
+        return Dir(1)
+
+    @staticmethod
+    def right_down():
+        return Dir(2)
+
+    @staticmethod
+    def left_down():
+        return Dir(3)
+
+    @staticmethod
+    def left():
+        return Dir(4)
+
+    @staticmethod
+    def left_up():
+        return Dir(5)

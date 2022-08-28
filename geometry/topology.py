@@ -1,15 +1,19 @@
 from ..data_types.position import Position
-from ..data_types.direction import Dir
+from ..data_types import direction
 from ..data_types.zone import Zone, LambdaZone
 
 
 class Topology:
     def __init__(self):
         pass
+
+    @classmethod
+    def direction_type(cls):
+        return direction.DirBase
     
     @classmethod
     def directions(cls):
-        raise NotImplemented()
+        return cls.direction_type().shifts.values()
 
     @classmethod
     def neighbors(cls, pos: Position):
@@ -87,12 +91,26 @@ class Topology:
         return shot
 
     @classmethod
+    def distance(cls, pos1, pos2):
+        return sum(cls.decompose_shifts(pos1, pos2).values())
+
+    @classmethod
     def dir_to(cls, pos: Position, target: Position):
-        raise NotImplemented()
+        shifts = list(cls.decompose_shifts(pos, target).values())
+        idx = shifts.index(max(shifts))
+        return cls.direction_type()(idx)
 
     @classmethod
     def decompose_shifts(cls, origin: Position, target: Position):
-        raise NotImplemented()
+        dx, dy = _dxy_(origin, target)
+
+        factors = {d: _divide((dx, dy), d) for d in cls.directions()}
+        for d in cls.directions():
+            for d2 in cls.directions():
+                if d != d2 and _divide(d, d2) > 0:
+                    factors[d2] -= factors[d]
+
+        return factors
 
     @classmethod
     def dir_from(cls, pos: Position, target: Position):
@@ -100,18 +118,6 @@ class Topology:
 
     @classmethod
     def zone_near(cls, pos: Position, size):
-        # near = {pos: 0}
-        #
-        # for step in range(size):
-        #     for p in list(near.keys()):
-        #         for np in cls.neighbors(p):
-        #             old_val = near.get(np, 9999)
-        #             new_val = near[p] + 1
-        #             if old_val > new_val:
-        #                 near[np] = new_val
-        #     near = near
-        #
-        # return Zone(list(near.keys()))
         return LambdaZone(lambda q: cls.distance(pos, q) <= size)
 
     @classmethod
@@ -126,9 +132,9 @@ class Topology:
 
 class Flat4(Topology):
     @classmethod
-    def directions(cls):
-        return [(0, 1), (1, 0), (0, -1), (-1, 0)]
-    
+    def direction_type(cls):
+        return direction.Dir4
+
     @classmethod
     def distance(cls, pos1, pos2):
         #return abs(pos1.x - pos2.x) + abs(pos1.y - pos2.y)
@@ -140,47 +146,47 @@ class Flat4(Topology):
         else:
             return ady + 0.4 * adx
 
-    @classmethod
-    def dir_to(cls, pos: Position, target: Position):
-        dx, dy = _dxy_(pos, target)
-        if abs(dx) > abs(dy):
-            if dx > 0:
-                return Dir(1)
-            else:
-                return Dir(3)
-        else:
-            if dy > 0:
-                return Dir(2)
-            else:
-                return Dir(0)
+    # @classmethod
+    # def dir_to(cls, pos: Position, target: Position):
+    #     dx, dy = _dxy_(pos, target)
+    #     if abs(dx) > abs(dy):
+    #         if dx > 0:
+    #             return Dir(1)
+    #         else:
+    #             return Dir(3)
+    #     else:
+    #         if dy > 0:
+    #             return Dir(2)
+    #         else:
+    #             return Dir(0)
 
-    @classmethod
-    def decompose_shifts(cls, origin: Position, target: Position):
-        dx, dy = target.x - origin.x, target.y - origin.y
-        adx, ady = abs(dx), abs(dy)
-        steps_prime, steps_sec = max(adx, ady), min(adx, ady)
-
-        if adx > ady:
-            shift_prime = int(dx / adx), 0
-        else:
-            shift_prime = 0, int(dy / ady)
-
-        if steps_sec == 0:
-            shift_sec = 0, 0
-        else:
-            if adx > ady:
-                shift_sec = 0, int(dy / ady)
-            else:
-                shift_sec = int(dx / adx), 0
-
-        return shift_prime, steps_prime, shift_sec, steps_sec
+    # @classmethod
+    # def decompose_shifts(cls, origin: Position, target: Position):
+    #     dx, dy = target.x - origin.x, target.y - origin.y
+    #     adx, ady = abs(dx), abs(dy)
+    #     steps_prime, steps_sec = max(adx, ady), min(adx, ady)
+    #
+    #     if adx > ady:
+    #         shift_prime = int(dx / adx), 0
+    #     else:
+    #         shift_prime = 0, int(dy / ady)
+    #
+    #     if steps_sec == 0:
+    #         shift_sec = 0, 0
+    #     else:
+    #         if adx > ady:
+    #             shift_sec = 0, int(dy / ady)
+    #         else:
+    #             shift_sec = int(dx / adx), 0
+    #
+    #     return shift_prime, steps_prime, shift_sec, steps_sec
 
 
 class Flat8(Topology):
     @classmethod
-    def directions(cls):
-        return [(0, 1), (1, 1), (1, 0), (1, -1), (0, -1), (-1, -1), (-1, 0), (-1, 1)]
-    
+    def direction_type(cls):
+        return direction.Dir8
+
     @classmethod
     def distance(cls, pos1, pos2):
         #return abs(pos1.x - pos2.x) + abs(pos1.y - pos2.y)
@@ -194,31 +200,8 @@ class Flat8(Topology):
 
 class Hexa(Topology):
     @classmethod
-    def directions(cls):
-        return [(0, 1), (1, 1), (1, 0), (0, -1), (-1, -1), (-1, 0)]
-
-    @classmethod
-    def distance(cls, pos1, pos2):
-        return sum(cls.decompose_shifts(pos1, pos2))
-
-    @classmethod
-    def dir_to(cls, pos: Position, target: Position):
-        shifts = list(cls.decompose_shifts(pos, target).values())
-        idx = shifts.index(max(shifts))
-        return Dir(idx)  # TODO we need Dir6
-
-    @classmethod
-    def decompose_shifts(cls, origin: Position, target: Position):
-        dx, dy = _dxy_(origin, target)
-
-        factors = {d: _divide((dx, dy), d) for d in cls.directions()}
-        for d in cls.directions():
-            for d2 in cls.directions():
-                if d != d2 and _divide(d2, d) > 0:
-                    factors[d2] -= factors[d]
-
-        return factors
-        # return shift_prime, steps_prime, shift_sec, steps_sec
+    def direction_type(cls):
+        return direction.Dir6H
 
 
 def _dxy_(pos1: Position, pos2: Position):
@@ -230,7 +213,15 @@ def _dxy_(pos1: Position, pos2: Position):
 def _divide(xy, divxy):
     x, y = xy
     dx, dy = divxy
-    if x * dx <= 0 or y * dy <= 0:
+
+    # divx = x // dx if dx != 0 else 0
+    # divy = y // dy if dy != 0 else 0
+
+    if x * dx <= 0 and y * dy <= 0:
         return 0
+    elif dy == 0:
+        return x // dx
+    elif dx == 0:
+        return y // dy
     else:
         return min(x // dx, y // dy)
